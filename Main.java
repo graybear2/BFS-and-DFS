@@ -77,9 +77,9 @@ public class Main {
 		ArrayList<String> ladder = new ArrayList<String>();
 		Set<String> dict = makeDictionary();
 		ladder.add(start);
-		getWordLadderDFS(dict, ladder, start, end);
+		visited.add(start);
 		ladder.add(end);
-		
+		getWordLadderDFS(dict, ladder, start, end);
 		/*ladder.add("I");
 		ladder.add("haven't");
 		ladder.add("actually");
@@ -98,10 +98,11 @@ public class Main {
 			for(int i = 0; i<26; i++){
 				String newWord = word.substring(0, k) + ((char) (65 + i)) + word.substring(k+1,5);
 				if(dict.contains(newWord) && !visited.contains(newWord)){
-					System.out.println(newWord);
 					visited.add(newWord);
 					if(getWordLadderDFS(dict, ladder, newWord, end))
-						ladder.add(newWord);
+						if(!newWord.equals(end)) {
+							ladder.add(newWord);
+						}
 						return true;
 				}
 			}
@@ -122,7 +123,7 @@ public class Main {
 		Set<String> words = new HashSet<String>();
 		Scanner infile = null;
 		try {
-			infile = new Scanner (new File("short_dict")); //changed file
+			infile = new Scanner (new File("/Users/home/Documents/assignment3/src/assignment3/five_letter_words.txt")); //changed file
 		} catch (FileNotFoundException e) {
 			System.out.println("Dictionary File not Found!");
 			e.printStackTrace();
@@ -135,7 +136,8 @@ public class Main {
 	}
 	
 	public static void printLadder(ArrayList<String> ladder) {
-		for(int k=0; k<ladder.size(); k++){
+			System.out.println(ladder.get(0));
+		for(int k= ladder.size()-1; k > 0; k--){
 			System.out.println(ladder.get(k));
 		}
 	}
