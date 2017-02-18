@@ -99,11 +99,12 @@ public class Main {
 				String newWord = word.substring(0, k) + ((char) (65 + i)) + word.substring(k+1,5);
 				if(dict.contains(newWord) && !visited.contains(newWord)){
 					visited.add(newWord);
-					if(getWordLadderDFS(dict, ladder, newWord, end))
-						if(!newWord.equals(end)) {
-							ladder.add(newWord);
-						}
-						return true;
+					if(getWordLadderDFS(dict, ladder, newWord, end)) {
+                        if (!newWord.equals(end)) {
+                            ladder.add(newWord);
+                        }
+                        return true;
+                    }
 				}
 			}
 		}
