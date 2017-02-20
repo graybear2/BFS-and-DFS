@@ -19,9 +19,11 @@ import java.io.*;
 public class Main {
 	
 	// static variables and constants only here.
-	static Set<String> visited;
+	static ArrayList<String> visited;
 	static int count;
 	static ArrayList<String> queue;
+	static ArrayList<Integer> parents;
+	static int index;
 	
 	public static void main(String[] args) throws Exception {
 		
@@ -64,8 +66,10 @@ public class Main {
 		// initialize your static variables or constants here.
 		// We will call this method before running our JUNIT tests.  So call it 
 		// only once at the start of main.
-		visited = new HashSet<String>(); 
+		visited = new ArrayList<String>(); 
 		queue = new ArrayList<String>();
+		parents = new ArrayList<Integer>();
+		index = 0;
 	}
 	
 	/**
@@ -152,11 +156,15 @@ public class Main {
 			return ladder;
     	}
 		Set<String> dict = makeDictionary();
+		index = 0;
 		
+		parents.add(-1);
 		exploreFrontier(start, ladder, dict, end);
+		index++;
 		while(queue.size() > 0){
 			exploreFrontier(queue.get(0), ladder, dict, end);
 			queue.remove(0);
+			index++;
 		}
 		// TODO more code
 		
@@ -170,8 +178,15 @@ public class Main {
 				if(dict.contains(newWord) && !visited.contains(newWord)){
 					visited.add(newWord);
 					queue.add(newWord);
+					parents.add(index);
 					if(newWord.equals(end)){
-						ladder.add(newWord);
+						//ladder.add(newWord);
+						ladder.add(visited.get(visited.size()-1));
+						while(parents.get(index) != -1){
+							ladder.add(visited.get(parents.get(index)));
+							index = parents.get(index);
+						}
+						queue.clear();
 					}
 				}
 			}
@@ -198,7 +213,7 @@ public class Main {
 		if(ladder.size() > 2){
 			System.out.println("a " + count + "-rung ladder exists between " 
 					+ ladder.get(0).toLowerCase() + " and " 
-					+ ladder.get(ladder.size()-1).toLowerCase() + ".");
+					+ ladder.get(1).toLowerCase() + ".");
 		}
 		else{
 			System.out.println("no word ladder can be found between " 
