@@ -157,16 +157,20 @@ public class Main {
     	}
 		Set<String> dict = makeDictionary();
 		index = 0;
+		parents.clear();
 		
 		parents.add(-1);
 		exploreFrontier(start, ladder, dict, end);
 		index++;
 		while(queue.size() > 0){
 			exploreFrontier(queue.get(0), ladder, dict, end);
-			queue.remove(0);
+			if(queue.size() > 0)
+				queue.remove(0);
 			index++;
 		}
 		// TODO more code
+		if(ladder.size() == 1)
+			ladder.add(end);
 		
 		return ladder; // replace this line later with real return
 	}
@@ -181,10 +185,11 @@ public class Main {
 					parents.add(index);
 					if(newWord.equals(end)){
 						//ladder.add(newWord);
-						ladder.add(visited.get(visited.size()-1));
+						ladder.add(visited.get(visited.size()-1)); //adds the end word
 						while(parents.get(index) != -1){
-							ladder.add(visited.get(parents.get(index)));
+							ladder.add(visited.get(index));
 							index = parents.get(index);
+							count++;
 						}
 						queue.clear();
 					}
@@ -210,22 +215,24 @@ public class Main {
 	}
 	
 	public static void printLadder(ArrayList<String> ladder) {
+		
+		ladder.add(ladder.get(0));
+		ladder.remove(0);
+		
 		if(ladder.size() > 2){
 			System.out.println("a " + count + "-rung ladder exists between " 
-					+ ladder.get(0).toLowerCase() + " and " 
-					+ ladder.get(1).toLowerCase() + ".");
+					+ ladder.get(ladder.size()-1).toLowerCase() + " and " 
+					+ ladder.get(0).toLowerCase() + ".");
 		}
 		else{
 			System.out.println("no word ladder can be found between " 
-					+ ladder.get(0).toLowerCase() + " and " 
-					+ ladder.get(ladder.size()-1).toLowerCase() + ".");
+					+ ladder.get(ladder.size()-1).toLowerCase() + " and " 
+					+ ladder.get(0).toLowerCase() + ".");
 		}
 		
-		System.out.println(ladder.get(0).toLowerCase());
-		for(int k= ladder.size()-1; k > 0; k--){
+		//System.out.println(ladder.get(0).toLowerCase());
+		for(int k= ladder.size()-1; k >= 0; k--){
 			System.out.println(ladder.get(k).toLowerCase());
 		}
 	}
-	// TODO
-	// Other private static methods here
 }
