@@ -20,46 +20,48 @@ public class Main {
 	
 	// static variables and constants only here.
 	static ArrayList<String> visited;
-	static int count;
 	static ArrayList<String> queue;
 	static ArrayList<Integer> parents;
 	static int index;
 	
 	public static void main(String[] args) throws Exception {
 		
+		Scanner kb;	// input Scanner for commands
+		PrintStream ps;	// output file
+		// If arguments are specified, read/write from/to files instead of Std IO.
+		if (args.length != 0) {
+			kb = new Scanner(new File(args[0]));
+			ps = new PrintStream(new File(args[1]));
+			System.setOut(ps);			// redirect output to ps
+		} else {
+			kb = new Scanner(System.in);// default from Stdin
+			ps = System.out;			// default to Stdout
+		}
+		
 		System.out.println("Program Started");
 		initialize();
+		
+		engine(kb);
+	}
+	
+	public static void engine(Scanner kb){
 		boolean done = false;
 		
 		while (!done){
 		
-			Scanner kb;	// input Scanner for commands
-			PrintStream ps;	// output file
-		// If arguments are specified, read/write from/to files instead of Std IO.
-			if (args.length != 0) {
-				kb = new Scanner(new File(args[0]));
-				ps = new PrintStream(new File(args[1]));
-				System.setOut(ps);			// redirect output to ps
-			} else {
-				kb = new Scanner(System.in);// default from Stdin
-				ps = System.out;			// default to Stdout
-			}
 			ArrayList<String> input = parse(kb);
 			if(input.size() == 2){
-				//System.out.println(input);
-				//NEED TO ADD CHECK FOR /QUIT
-				//ArrayList<String> ladder = getWordLadderDFS(input.get(0), input.get(1));
-				ArrayList<String> ladder = getWordLadderBFS(input.get(0), input.get(1));
+				ArrayList<String> ladder2 = getWordLadderBFS(input.get(0), input.get(1));
+				printLadder(ladder2);
+				ArrayList<String> ladder = getWordLadderDFS(input.get(0), input.get(1));
+				//ArrayList<String> ladder2 = getWordLadderDFS("hello", "cells");
 				printLadder(ladder);
-				visited.clear();
-				queue.clear();
 			}
 			
 			if(input.get(0).equals("/quit"))
 				done = true;
 		}
 		
-		// TODO methods to read in words, output ladder
 	}
 	
 	public static void initialize() {
@@ -112,13 +114,14 @@ public class Main {
 		// Returned list should be ordered start to end.  Include start and end.
 		// Return empty list if no ladder.
 		// TODO some code
+		visited.clear();
+		queue.clear();
 		ArrayList<String> ladder = new ArrayList<String>();
 		Set<String> dict = makeDictionary();
-		ladder.add(start);
-		visited.add(start);
-		ladder.add(end);
-		count = 0;
-		getWordLadderDFS(dict, ladder, start, end);
+		ladder.add(start.toUpperCase());
+		visited.add(start.toUpperCase());
+		ladder.add(end.toUpperCase());
+		getWordLadderDFS(dict, ladder, start.toUpperCase(), end.toUpperCase());
 		
 		return ladder; // replace this line later with real return
 	}
@@ -134,7 +137,6 @@ public class Main {
 					if(getWordLadderDFS(dict, ladder, newWord, end)) {
                         if (!newWord.equals(end)) {
                             ladder.add(newWord);
-                            count++;
                         }
                         return true;
                     }
@@ -147,23 +149,24 @@ public class Main {
     public static ArrayList<String> getWordLadderBFS(String start, String end) {
 		
 		// TODO some code
+    	visited.clear();
+		queue.clear();
+		parents.clear();
     	ArrayList<String> ladder = new ArrayList<String>();
-    	count = 0;
-    	ladder.add(start);
-    	visited.add(start);
-    	if(start.equals(end)){
+    	ladder.add(start.toUpperCase());
+    	visited.add(start.toUpperCase());
+    	if(start.toUpperCase().equals(end.toUpperCase())){
     		ladder.add(end);
 			return ladder;
     	}
 		Set<String> dict = makeDictionary();
 		index = 0;
-		parents.clear();
 		
 		parents.add(-1);
-		exploreFrontier(start, ladder, dict, end);
+		exploreFrontier(start.toUpperCase(), ladder, dict, end.toUpperCase());
 		index++;
 		while(queue.size() > 0){
-			exploreFrontier(queue.get(0), ladder, dict, end);
+			exploreFrontier(queue.get(0).toUpperCase(), ladder, dict, end.toUpperCase());
 			if(queue.size() > 0)
 				queue.remove(0);
 			index++;
@@ -189,7 +192,6 @@ public class Main {
 						while(parents.get(index) != -1){
 							ladder.add(visited.get(index));
 							index = parents.get(index);
-							count++;
 						}
 						queue.clear();
 					}
@@ -220,9 +222,9 @@ public class Main {
 		ladder.remove(0);
 		
 		if(ladder.size() > 2){
-			System.out.println("a " + count + "-rung ladder exists between " 
+			System.out.print("a " + Integer.valueOf(ladder.size()-2) + "-rung ladder exists between " 
 					+ ladder.get(ladder.size()-1).toLowerCase() + " and " 
-					+ ladder.get(0).toLowerCase() + ".");
+					+ ladder.get(0).toLowerCase() + ".\n");
 		}
 		else{
 			System.out.println("no word ladder can be found between " 
