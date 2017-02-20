@@ -20,29 +20,42 @@ public class Main {
 	
 	// static variables and constants only here.
 	static Set<String> visited;
+	static int count;
+	static ArrayList<String> queue;
 	
 	public static void main(String[] args) throws Exception {
 		
 		System.out.println("Program Started");
-		
-		Scanner kb;	// input Scanner for commands
-		PrintStream ps;	// output file
-		// If arguments are specified, read/write from/to files instead of Std IO.
-		if (args.length != 0) {
-			kb = new Scanner(new File(args[0]));
-			ps = new PrintStream(new File(args[1]));
-			System.setOut(ps);			// redirect output to ps
-		} else {
-			kb = new Scanner(System.in);// default from Stdin
-			ps = System.out;			// default to Stdout
-		}
 		initialize();
-		ArrayList<String> input = parse(kb);
-		//System.out.println(input);
-		//NEED TO ADD CHECK FOR /QUIT
-		ArrayList<String> ladder = getWordLadderDFS(input.get(0), input.get(1));
-		//public static ArrayList<String> getWordLadderBFS(String start, String end)
-		printLadder(ladder);
+		boolean done = false;
+		
+		while (!done){
+		
+			Scanner kb;	// input Scanner for commands
+			PrintStream ps;	// output file
+		// If arguments are specified, read/write from/to files instead of Std IO.
+			if (args.length != 0) {
+				kb = new Scanner(new File(args[0]));
+				ps = new PrintStream(new File(args[1]));
+				System.setOut(ps);			// redirect output to ps
+			} else {
+				kb = new Scanner(System.in);// default from Stdin
+				ps = System.out;			// default to Stdout
+			}
+			ArrayList<String> input = parse(kb);
+			if(input.size() == 2){
+				//System.out.println(input);
+				//NEED TO ADD CHECK FOR /QUIT
+				//ArrayList<String> ladder = getWordLadderDFS(input.get(0), input.get(1));
+				ArrayList<String> ladder = getWordLadderBFS(input.get(0), input.get(1));
+				printLadder(ladder);
+				visited.clear();
+				queue.clear();
+			}
+			
+			if(input.get(0).equals("/quit"))
+				done = true;
+		}
 		
 		// TODO methods to read in words, output ladder
 	}
@@ -52,6 +65,7 @@ public class Main {
 		// We will call this method before running our JUNIT tests.  So call it 
 		// only once at the start of main.
 		visited = new HashSet<String>(); 
+		queue = new ArrayList<String>();
 	}
 	
 	/**
@@ -60,12 +74,32 @@ public class Main {
 	 * If command is /quit, return empty ArrayList. 
 	 */
 	public static ArrayList<String> parse(Scanner keyboard) {
-		String[] temp;
+		
 		ArrayList<String> retVal = new ArrayList<String>();
-		temp = keyboard.nextLine().split(" ");
-		retVal.add(temp[0]);
-		if(temp.length == 2)     //could be one word if the /quit command is given
-			retVal.add(temp[1]);
+		int index = 0;
+		String input = keyboard.nextLine();
+		while(!Character.isLetter(Character.valueOf(input.charAt(index)))){
+			index++;
+		}
+		
+		if(index != 0){
+			if(input.substring(index-1, index+4).equals("/quit")){
+				retVal.add("/quit");
+				return retVal;
+			}
+		}
+		retVal.add(input.substring(index, index+5).toUpperCase());
+	
+		index += 5;
+		while(!Character.isLetter(Character.valueOf(input.charAt(index))) && 
+			index < input.length()){
+			index++;
+		}
+		
+		if(index < input.length()){
+			retVal.add(input.substring(index, index+5).toUpperCase());
+		}
+		
 		return retVal;
 	}
 	
@@ -79,14 +113,8 @@ public class Main {
 		ladder.add(start);
 		visited.add(start);
 		ladder.add(end);
+		count = 0;
 		getWordLadderDFS(dict, ladder, start, end);
-		/*ladder.add("I");
-		ladder.add("haven't");
-		ladder.add("actually");
-		ladder.add("written");
-		ladder.add("dfs");
-		ladder.add("yet");
-		*/
 		
 		return ladder; // replace this line later with real return
 	}
@@ -102,6 +130,7 @@ public class Main {
 					if(getWordLadderDFS(dict, ladder, newWord, end)) {
                         if (!newWord.equals(end)) {
                             ladder.add(newWord);
+                            count++;
                         }
                         return true;
                     }
@@ -114,17 +143,46 @@ public class Main {
     public static ArrayList<String> getWordLadderBFS(String start, String end) {
 		
 		// TODO some code
+    	ArrayList<String> ladder = new ArrayList<String>();
+    	count = 0;
+    	ladder.add(start);
+    	visited.add(start);
+    	if(start.equals(end)){
+    		ladder.add(end);
+			return ladder;
+    	}
 		Set<String> dict = makeDictionary();
+		
+		exploreFrontier(start, ladder, dict, end);
+		while(queue.size() > 0){
+			exploreFrontier(queue.get(0), ladder, dict, end);
+			queue.remove(0);
+		}
 		// TODO more code
 		
-		return null; // replace this line later with real return
+		return ladder; // replace this line later with real return
 	}
+    
+    public static void exploreFrontier(String word, ArrayList<String> ladder, Set<String> dict, String end){
+    	for(int k=0; k<5; k++){
+			for(int i = 0; i<26; i++){
+				String newWord = word.substring(0, k) + ((char) (65 + i)) + word.substring(k+1,5);
+				if(dict.contains(newWord) && !visited.contains(newWord)){
+					visited.add(newWord);
+					queue.add(newWord);
+					if(newWord.equals(end)){
+						ladder.add(newWord);
+					}
+				}
+			}
+		}
+    }
     
 	public static Set<String>  makeDictionary () {
 		Set<String> words = new HashSet<String>();
 		Scanner infile = null;
 		try {
-			infile = new Scanner (new File("/Users/home/Documents/assignment3/src/assignment3/five_letter_words.txt")); //changed file
+			infile = new Scanner (new File("five_letter_words.txt")); //changed file
 		} catch (FileNotFoundException e) {
 			System.out.println("Dictionary File not Found!");
 			e.printStackTrace();
@@ -137,9 +195,20 @@ public class Main {
 	}
 	
 	public static void printLadder(ArrayList<String> ladder) {
-			System.out.println(ladder.get(0));
+		if(ladder.size() > 2){
+			System.out.println("a " + count + "-rung ladder exists between " 
+					+ ladder.get(0).toLowerCase() + " and " 
+					+ ladder.get(ladder.size()-1).toLowerCase() + ".");
+		}
+		else{
+			System.out.println("no word ladder can be found between " 
+					+ ladder.get(0).toLowerCase() + " and " 
+					+ ladder.get(ladder.size()-1).toLowerCase() + ".");
+		}
+		
+		System.out.println(ladder.get(0).toLowerCase());
 		for(int k= ladder.size()-1; k > 0; k--){
-			System.out.println(ladder.get(k));
+			System.out.println(ladder.get(k).toLowerCase());
 		}
 	}
 	// TODO
