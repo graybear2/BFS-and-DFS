@@ -144,7 +144,7 @@ public class Main {
 		
 		for(int k=0; k<word.length(); k++){
 			for(int i = 0; i<26; i++){
-				String newWord = word.substring(0, k) + ((char) (65 + i)) + word.substring(k+1,5);
+				String newWord = word.substring(0, k) + ((char) (65 + i)) + word.substring(k+1,word.length());
 				if(dict.contains(newWord) && !visited.contains(newWord)){
 					neighbors.add(newWord);
 					visited.add(newWord);
@@ -245,7 +245,7 @@ public class Main {
     public static void exploreFrontier(String word, ArrayList<String> ladder, Set<String> dict, String end){
     	for(int k=0; k<word.length(); k++){
 			for(int i = 0; i<26; i++){
-				String newWord = word.substring(0, k) + ((char) (65 + i)) + word.substring(k+1,5);
+				String newWord = word.substring(0, k) + ((char) (65 + i)) + word.substring(k+1,word.length());
 				if(dict.contains(newWord) && !visited.contains(newWord)){
 					visited.add(newWord);
 					queue.add(newWord);
