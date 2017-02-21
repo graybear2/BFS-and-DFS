@@ -2,12 +2,12 @@
  * EE422C Project 3 submission by February 21st
  * Grayson Barrett
  * gmb974
- * <Student1 5-digit Unique No.>
- * <Student2 Name>
- * <Student2 EID>
- * <Student2 5-digit Unique No.>
+ * 16215
+ * Shariq Memon
+ * skm2662
+ * 16215
  * Slip days used: <0>
- * Git URL:
+ * Git URL: git@github.com:graybear2/assignment3.git
  * Spring 2017
  */
 
