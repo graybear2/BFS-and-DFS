@@ -44,6 +44,12 @@ public class Main {
 		engine(kb);
 	}
 	
+	
+	/**
+	 * @param kb scanner object for reading
+	 * continuously accepts word ladder input and produces word ladders
+	 * until the user gives the /quit command
+	 */
 	public static void engine(Scanner kb){
 		boolean done = false;
 		
@@ -64,6 +70,9 @@ public class Main {
 		
 	}
 	
+	/**
+	 * initializes all static variables
+	 */
 	public static void initialize() {
 		// initialize your static variables or constants here.
 		// We will call this method before running our JUNIT tests.  So call it 
@@ -80,34 +89,6 @@ public class Main {
 	 * If command is /quit, return empty ArrayList. 
 	 */
 	public static ArrayList<String> parse(Scanner keyboard) {
-		
-		/*ArrayList<String> retVal = new ArrayList<String>();
-		int index = 0;
-		String input = keyboard.nextLine();
-		while(!Character.isLetter(Character.valueOf(input.charAt(index)))){
-			index++;
-		}
-		
-		if(index != 0){
-			if(input.substring(index-1, index+4).equals("/quit")){
-				retVal.add("/quit");
-				return retVal;
-			}
-		}
-		retVal.add(input.substring(index, index+5).toUpperCase());
-	
-		index += 5;
-		while(!Character.isLetter(Character.valueOf(input.charAt(index))) && 
-			index < input.length()){
-			index++;
-		}
-		
-		if(index < input.length()){
-			retVal.add(input.substring(index, index+5).toUpperCase());
-		}
-		
-		return retVal;
-		*/
 		ArrayList<String> retVal = new ArrayList<String>();
 		String command1 = keyboard.next();
 		if(command1.equals("/quit")){
@@ -123,6 +104,11 @@ public class Main {
 		
 	}
 	
+	/**
+	 * @param start: start word of the ladder
+	 * @param end: end word of the ladder
+	 * @return arrayList containing a ladder produced by a depth first search
+	 */
 	public static ArrayList<String> getWordLadderDFS(String start, String end) {
 		
 		// Returned list should be ordered start to end.  Include start and end.
@@ -143,13 +129,20 @@ public class Main {
 		return ladder; // replace this line later with real return
 	}
 	
+	/**
+	 * @param dict: the dictionary
+	 * @param ladder: the ladder being developed
+	 * @param word: the current node the DFS is on
+	 * @param end: the final word to be reached
+	 * @return the success of the search from that node
+	 */
 	public static boolean getWordLadderDFS(Set<String> dict, ArrayList<String> ladder, String word, String end){
 		visited.add(word);
 		if(word.equals(end))
 			return true;
 		ArrayList<String> neighbors = new ArrayList<String>();
 		
-		for(int k=0; k<5; k++){
+		for(int k=0; k<word.length(); k++){
 			for(int i = 0; i<26; i++){
 				String newWord = word.substring(0, k) + ((char) (65 + i)) + word.substring(k+1,5);
 				if(dict.contains(newWord) && !visited.contains(newWord)){
@@ -159,6 +152,7 @@ public class Main {
 			}
 		}
 		
+		//try using the "best" neighbor to continue DFS
 		for(int k = 0; k<neighbors.size(); k++){
 			String bestRoute = findBestRoute(neighbors, end);
 			
@@ -177,6 +171,11 @@ public class Main {
 		return false;
 	}
 	
+	/**
+	 * @param neighbors: arrayList of nodes to continue DFS
+	 * @param end: the final word to be reached
+	 * @return the neighbor most similar to the end word
+	 */
 	public static String findBestRoute(ArrayList<String> neighbors, String end){
 		String bestRoute = "";
 		int maxDiff = end.length();
@@ -197,15 +196,20 @@ public class Main {
 		return bestRoute;
 	}
 	
+	/**
+	 * @param start: start word of the ladder
+	 * @param end: end word of the ladder
+	 * @return arrayList containing a ladder produced by a breadth first search
+	 */
     public static ArrayList<String> getWordLadderBFS(String start, String end) {
-		
-		// TODO some code
     	visited.clear();
 		queue.clear();
 		parents.clear();
     	ArrayList<String> ladder = new ArrayList<String>();
+    	
     	ladder.add(start.toUpperCase());
     	visited.add(start.toUpperCase());
+    	
     	if(start.toUpperCase().equals(end.toUpperCase())){
     		ladder.add(end);
 			return ladder;
@@ -222,18 +226,24 @@ public class Main {
 				queue.remove(0);
 			index++;
 		}
-		// TODO more code
 		if(ladder.size() == 1)
 			ladder.add(end);
 		
 		ladder.add(ladder.get(0));
 		ladder.remove(0);
 		
-		return ladder; // replace this line later with real return
+		return ladder;
 	}
     
+    /**
+	 * @param dict: the dictionary
+	 * @param ladder: the ladder being developed
+	 * @param word: the current node the DFS is on
+	 * @param end: the final word to be reached
+	 * Will fill ladder with the rungs on the shortest path from start to finish
+	 */
     public static void exploreFrontier(String word, ArrayList<String> ladder, Set<String> dict, String end){
-    	for(int k=0; k<5; k++){
+    	for(int k=0; k<word.length(); k++){
 			for(int i = 0; i<26; i++){
 				String newWord = word.substring(0, k) + ((char) (65 + i)) + word.substring(k+1,5);
 				if(dict.contains(newWord) && !visited.contains(newWord)){
@@ -270,6 +280,10 @@ public class Main {
 		return words;
 	}
 	
+	/**
+	 * @param ladder (in reverse order)
+	 * prints a ladder in the correct order
+	 */
 	public static void printLadder(ArrayList<String> ladder) {
 		if(ladder.size() > 2){
 			System.out.print("a " + Integer.valueOf(ladder.size()-2) + "-rung ladder exists between " 
@@ -282,7 +296,6 @@ public class Main {
 					+ ladder.get(0).toLowerCase() + ".");
 		}
 		
-		//System.out.println(ladder.get(0).toLowerCase());
 		for(int k= ladder.size()-1; k >= 0; k--){
 			System.out.println(ladder.get(k).toLowerCase());
 		}
