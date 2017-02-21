@@ -123,6 +123,9 @@ public class Main {
 		ladder.add(end.toUpperCase());
 		getWordLadderDFS(dict, ladder, start.toUpperCase(), end.toUpperCase());
 		
+		ladder.add(ladder.get(0));
+		ladder.remove(0);
+		
 		return ladder; // replace this line later with real return
 	}
 	
@@ -175,6 +178,9 @@ public class Main {
 		if(ladder.size() == 1)
 			ladder.add(end);
 		
+		ladder.add(ladder.get(0));
+		ladder.remove(0);
+		
 		return ladder; // replace this line later with real return
 	}
     
@@ -217,10 +223,6 @@ public class Main {
 	}
 	
 	public static void printLadder(ArrayList<String> ladder) {
-		
-		ladder.add(ladder.get(0));
-		ladder.remove(0);
-		
 		if(ladder.size() > 2){
 			System.out.print("a " + Integer.valueOf(ladder.size()-2) + "-rung ladder exists between " 
 					+ ladder.get(ladder.size()-1).toLowerCase() + " and " 
