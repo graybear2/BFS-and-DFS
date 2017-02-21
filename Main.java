@@ -81,7 +81,7 @@ public class Main {
 	 */
 	public static ArrayList<String> parse(Scanner keyboard) {
 		
-		ArrayList<String> retVal = new ArrayList<String>();
+		/*ArrayList<String> retVal = new ArrayList<String>();
 		int index = 0;
 		String input = keyboard.nextLine();
 		while(!Character.isLetter(Character.valueOf(input.charAt(index)))){
@@ -107,6 +107,20 @@ public class Main {
 		}
 		
 		return retVal;
+		*/
+		ArrayList<String> retVal = new ArrayList<String>();
+		String command1 = keyboard.next();
+		if(command1.equals("/quit")){
+			retVal.add(command1);
+			return retVal;
+		}
+		else{
+			String command2 = keyboard.next();
+			retVal.add(command1);
+			retVal.add(command2);
+			return retVal;
+		}
+		
 	}
 	
 	public static ArrayList<String> getWordLadderDFS(String start, String end) {
@@ -130,23 +144,57 @@ public class Main {
 	}
 	
 	public static boolean getWordLadderDFS(Set<String> dict, ArrayList<String> ladder, String word, String end){
+		visited.add(word);
 		if(word.equals(end))
 			return true;
+		ArrayList<String> neighbors = new ArrayList<String>();
+		
 		for(int k=0; k<5; k++){
 			for(int i = 0; i<26; i++){
 				String newWord = word.substring(0, k) + ((char) (65 + i)) + word.substring(k+1,5);
 				if(dict.contains(newWord) && !visited.contains(newWord)){
+					neighbors.add(newWord);
 					visited.add(newWord);
-					if(getWordLadderDFS(dict, ladder, newWord, end)) {
-                        if (!newWord.equals(end)) {
-                            ladder.add(newWord);
-                        }
-                        return true;
-                    }
 				}
 			}
 		}
+		
+		for(int k = 0; k<neighbors.size(); k++){
+			String bestRoute = findBestRoute(neighbors, end);
+			
+			if(getWordLadderDFS(dict, ladder, bestRoute, end)) {
+                if (!bestRoute.equals(end)) {
+                    ladder.add(bestRoute);
+                }
+                return true;
+            }
+			
+			else{
+				neighbors.remove(bestRoute);
+			}
+		}
+		
 		return false;
+	}
+	
+	public static String findBestRoute(ArrayList<String> neighbors, String end){
+		String bestRoute = "";
+		int maxDiff = end.length();
+		
+		for(int k = 0; k<neighbors.size(); k++){
+			int countDiff = 0;
+			for(int i=0; i<end.length(); i++){
+				if(neighbors.get(k).toUpperCase().charAt(i) != end.toUpperCase().charAt(i)){
+					countDiff++;
+				}
+			}
+			
+			if(countDiff <= maxDiff){
+				maxDiff = countDiff;
+				bestRoute = neighbors.get(k);
+			}
+		}
+		return bestRoute;
 	}
 	
     public static ArrayList<String> getWordLadderBFS(String start, String end) {
