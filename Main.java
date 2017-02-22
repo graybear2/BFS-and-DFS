@@ -153,7 +153,7 @@ public class Main {
 		}
 		
 		//try using the "best" neighbor to continue DFS
-		for(int k = 0; k<neighbors.size(); k++){
+		while(neighbors.size() > 0){
 			String bestRoute = findBestRoute(neighbors, end);
 			
 			if(getWordLadderDFS(dict, ladder, bestRoute, end)) {
@@ -289,15 +289,15 @@ public class Main {
 			System.out.print("a " + Integer.valueOf(ladder.size()-2) + "-rung ladder exists between " 
 					+ ladder.get(ladder.size()-1).toLowerCase() + " and " 
 					+ ladder.get(0).toLowerCase() + ".\n");
+			
+			for(int k= ladder.size()-1; k >= 0; k--){
+				System.out.println(ladder.get(k).toLowerCase());
+			}
 		}
 		else{
 			System.out.println("no word ladder can be found between " 
 					+ ladder.get(ladder.size()-1).toLowerCase() + " and " 
 					+ ladder.get(0).toLowerCase() + ".");
-		}
-		
-		for(int k= ladder.size()-1; k >= 0; k--){
-			System.out.println(ladder.get(k).toLowerCase());
 		}
 	}
 }
